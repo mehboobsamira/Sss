@@ -3,36 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Neon Tree - Samira</title>
+    <title>Neon Pine Tree - Samira</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <style>
         body, html { margin: 0; padding: 0; background: #020205; overflow: hidden; height: 100%; }
-        #container { position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
-        canvas { position: absolute; filter: drop-shadow(0 0 10px #00f2ff); }
+        #canvas-container { 
+            position: relative; width: 100%; height: 100%; 
+            display: flex; align-items: center; justify-content: center; 
+        }
+        canvas { position: absolute; bottom: 0; filter: drop-shadow(0 0 8px #00f2ff); }
         
-        #final-text {
+        #message {
             position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
             color: #fff;
             font-family: 'serif';
-            font-size: 1.8rem;
+            font-size: 2rem;
             text-align: center;
             opacity: 0;
-            text-shadow: 0 0 20px #00f2ff, 0 0 40px #0077ff;
-            z-index: 10;
+            text-shadow: 0 0 20px #00f2ff, 0 0 40px #ff0077;
+            z-index: 100;
+            width: 100%;
         }
     </style>
 </head>
 <body>
 
-<div id="container">
+<div id="canvas-container">
+    <div id="message">I Love You Jaan 💕🤌</div>
     <canvas id="treeCanvas"></canvas>
-    <div id="final-text">I Love You Jaan 💕🤌</div>
 </div>
 
 <script>
 const canvas = document.getElementById('treeCanvas');
 const ctx = canvas.getContext('2d');
-const text = document.getElementById('final-text');
+const msg = document.getElementById('message');
 
 let width, height;
 function resize() {
@@ -42,56 +48,86 @@ function resize() {
 window.addEventListener('resize', resize);
 resize();
 
-// Animation settings
-let branchLevel = 0;
-const maxLevel = 10; // Tree ki complexity
-const branches = [];
-
-function drawBranch(startX, startY, len, angle, branchWidth, level) {
+// Pine Tree logic (Evergreen style branches)
+function drawPineBranch(x, y, len, angle, branchWidth) {
     ctx.beginPath();
     ctx.save();
-    ctx.strokeStyle = "#00f2ff"; // Neon Blue
+    ctx.strokeStyle = "#00f2ff"; 
     ctx.lineWidth = branchWidth;
-    ctx.translate(startX, startY);
+    ctx.translate(x, y);
     ctx.rotate(angle * Math.PI / 180);
     ctx.moveTo(0, 0);
     ctx.lineTo(0, -len);
     ctx.stroke();
 
-    if (level < maxLevel) {
-        // Slow motion growth delay simulation
-        setTimeout(() => {
-            drawBranch(0, -len, len * 0.78, angle + 25, branchWidth * 0.7, level + 1);
-            drawBranch(0, -len, len * 0.78, angle - 25, branchWidth * 0.7, level + 1);
-        }, 500); // 6 seconds total buildup ke liye timing
+    // Small glowing hearts as flowers
+    if (len < 15) {
+        ctx.beginPath();
+        ctx.fillStyle = "#ff69b4";
+        ctx.arc(0, -len, 3, 0, Math.PI * 2);
+        ctx.shadowBlur = 15;
+        ctx.shadowColor = "#ff0077";
+        ctx.fill();
+        ctx.restore();
+        return;
     }
+
+    // Branching pattern for a triangular pine look
+    setTimeout(() => {
+        // Main trunk continuation
+        drawPineBranch(0, -len, len * 0.8, angle + (Math.random() * 10 - 5), branchWidth * 0.8);
+        
+        // Side branches (making it look like a real tree)
+        drawPineBranch(0, -len * 0.5, len * 0.5, angle + 45, branchWidth * 0.6);
+        drawPineBranch(0, -len * 0.5, len * 0.5, angle - 45, branchWidth * 0.6);
+    }, 400); // Animation speed control
+
     ctx.restore();
 }
 
-// Sequence logic
-function startAnimation() {
+function startCinematic() {
     ctx.clearRect(0, 0, width, height);
     ctx.lineCap = "round";
     
-    // Niche se trunk start hoga
-    drawBranch(width / 2, height - 100, height / 5, 0, 8, 0);
+    // Start growth from bottom center
+    drawPineBranch(width / 2, height - 80, height / 6, 0, 10);
 
-    // 6 seconds baad text aayega
-    gsap.to(canvas, { opacity: 0, duration: 2, delay: 6.5, ease: "power2.inOut" });
-    gsap.to(text, { 
-        opacity: 1, 
-        scale: 1.1, 
-        duration: 2.5, 
-        delay: 7.5,
-        onStart: () => {
-            // Screen par halka sa jhatka (impact) dene ke liye
-            canvas.style.display = "none";
-        }
+    // Timeline for transitions
+    const tl = gsap.timeline();
+
+    // After 6 seconds, fade tree and show message
+    tl.to(canvas, { 
+        opacity: 0, 
+        duration: 2, 
+        delay: 6, 
+        onComplete: () => { canvas.style.display = 'none'; } 
     });
+
+    tl.to(msg, { 
+        opacity: 1, 
+        scale: 1.2, 
+        duration: 2.5, 
+        ease: "back.out(1.7)" 
+    }, "-=1");
 }
 
-// Start immediately
-window.onload = startAnimation;
+// Sparkle particles in background
+function createSparkles() {
+    const sparkleCount = 20;
+    for(let i=0; i<sparkleCount; i++) {
+        let x = Math.random() * width;
+        let y = Math.random() * height;
+        ctx.fillStyle = "rgba(255, 255, 255, 0.3)";
+        ctx.beginPath();
+        ctx.arc(x, y, 1, 0, Math.PI*2);
+        ctx.fill();
+    }
+}
+
+window.onload = () => {
+    startCinematic();
+    setInterval(createSparkles, 100);
+};
 
 </script>
 </body>
