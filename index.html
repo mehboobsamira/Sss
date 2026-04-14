@@ -2,133 +2,142 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Neon Pine Tree - Samira</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For My Jaan</title>
     <style>
-        body, html { margin: 0; padding: 0; background: #020205; overflow: hidden; height: 100%; }
-        #canvas-container { 
-            position: relative; width: 100%; height: 100%; 
-            display: flex; align-items: center; justify-content: center; 
+        :root {
+            --neon-blue: #00f2ff;
+            --neon-pink: #ff0077;
         }
-        canvas { position: absolute; bottom: 0; filter: drop-shadow(0 0 8px #00f2ff); }
-        
-        #message {
-            position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            color: #fff;
-            font-family: 'serif';
-            font-size: 2rem;
-            text-align: center;
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #020205;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .container {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Pine Tree Animation */
+        .tree {
+            position: relative;
+            width: 0;
+            height: 0;
+            border-left: 100px solid transparent;
+            border-right: 100px solid transparent;
+            border-bottom: 150px solid var(--neon-blue);
+            filter: drop-shadow(0 0 20px var(--neon-blue));
             opacity: 0;
-            text-shadow: 0 0 20px #00f2ff, 0 0 40px #ff0077;
-            z-index: 100;
-            width: 100%;
+            transform: scale(0);
+            animation: growTree 6s ease-in-out forwards;
+        }
+
+        .tree::before {
+            content: '';
+            position: absolute;
+            top: 60px;
+            left: -120px;
+            border-left: 120px solid transparent;
+            border-right: 120px solid transparent;
+            border-bottom: 180px solid var(--neon-blue);
+        }
+
+        .tree::after {
+            content: '⭐';
+            position: absolute;
+            top: -30px;
+            left: -15px;
+            font-size: 30px;
+            filter: drop-shadow(0 0 10px yellow);
+        }
+
+        /* Hearts blooming on tree */
+        .heart {
+            position: absolute;
+            font-size: 20px;
+            opacity: 0;
+            animation: bloom 2s ease-in forwards;
+        }
+
+        @keyframes growTree {
+            0% { opacity: 0; transform: scale(0) translateY(100px); }
+            50% { opacity: 1; transform: scale(1.1) translateY(0); }
+            100% { opacity: 0; transform: scale(1.5); filter: blur(20px); }
+        }
+
+        @keyframes bloom {
+            0% { opacity: 0; transform: scale(0); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        /* Final Text */
+        .message {
+            position: absolute;
+            white-space: nowrap;
+            color: white;
+            font-size: 2.5rem;
+            font-weight: bold;
+            text-shadow: 0 0 10px var(--neon-blue), 0 0 20px var(--neon-pink);
+            opacity: 0;
+            animation: showText 2s ease-in forwards;
+            animation-delay: 6.5s;
+        }
+
+        @keyframes showText {
+            0% { opacity: 0; transform: scale(0.5); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        /* Background Sparkles */
+        .sparkle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 2s infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
         }
     </style>
 </head>
 <body>
 
-<div id="canvas-container">
-    <div id="message">I Love You Jaan 💕🤌</div>
-    <canvas id="treeCanvas"></canvas>
-</div>
-
-<script>
-const canvas = document.getElementById('treeCanvas');
-const ctx = canvas.getContext('2d');
-const msg = document.getElementById('message');
-
-let width, height;
-function resize() {
-    width = canvas.width = window.innerWidth;
-    height = canvas.height = window.innerHeight;
-}
-window.addEventListener('resize', resize);
-resize();
-
-// Pine Tree logic (Evergreen style branches)
-function drawPineBranch(x, y, len, angle, branchWidth) {
-    ctx.beginPath();
-    ctx.save();
-    ctx.strokeStyle = "#00f2ff"; 
-    ctx.lineWidth = branchWidth;
-    ctx.translate(x, y);
-    ctx.rotate(angle * Math.PI / 180);
-    ctx.moveTo(0, 0);
-    ctx.lineTo(0, -len);
-    ctx.stroke();
-
-    // Small glowing hearts as flowers
-    if (len < 15) {
-        ctx.beginPath();
-        ctx.fillStyle = "#ff69b4";
-        ctx.arc(0, -len, 3, 0, Math.PI * 2);
-        ctx.shadowBlur = 15;
-        ctx.shadowColor = "#ff0077";
-        ctx.fill();
-        ctx.restore();
-        return;
-    }
-
-    // Branching pattern for a triangular pine look
-    setTimeout(() => {
-        // Main trunk continuation
-        drawPineBranch(0, -len, len * 0.8, angle + (Math.random() * 10 - 5), branchWidth * 0.8);
+    <div class="container">
+        <div class="tree">
+            <span class="heart" style="top: 40px; left: -20px; animation-delay: 2s;">💕</span>
+            <span class="heart" style="top: 80px; left: 30px; animation-delay: 3s;">🤌</span>
+            <span class="heart" style="top: 100px; left: -50px; animation-delay: 4s;">💕</span>
+            <span class="heart" style="top: 130px; left: 10px; animation-delay: 5s;">💗</span>
+        </div>
         
-        // Side branches (making it look like a real tree)
-        drawPineBranch(0, -len * 0.5, len * 0.5, angle + 45, branchWidth * 0.6);
-        drawPineBranch(0, -len * 0.5, len * 0.5, angle - 45, branchWidth * 0.6);
-    }, 400); // Animation speed control
+        <div class="message">I Love You Jaan 💕🤌</div>
+    </div>
 
-    ctx.restore();
-}
-
-function startCinematic() {
-    ctx.clearRect(0, 0, width, height);
-    ctx.lineCap = "round";
-    
-    // Start growth from bottom center
-    drawPineBranch(width / 2, height - 80, height / 6, 0, 10);
-
-    // Timeline for transitions
-    const tl = gsap.timeline();
-
-    // After 6 seconds, fade tree and show message
-    tl.to(canvas, { 
-        opacity: 0, 
-        duration: 2, 
-        delay: 6, 
-        onComplete: () => { canvas.style.display = 'none'; } 
-    });
-
-    tl.to(msg, { 
-        opacity: 1, 
-        scale: 1.2, 
-        duration: 2.5, 
-        ease: "back.out(1.7)" 
-    }, "-=1");
-}
-
-// Sparkle particles in background
-function createSparkles() {
-    const sparkleCount = 20;
-    for(let i=0; i<sparkleCount; i++) {
-        let x = Math.random() * width;
-        let y = Math.random() * height;
-        ctx.fillStyle = "rgba(255, 255, 255, 0.3)";
-        ctx.beginPath();
-        ctx.arc(x, y, 1, 0, Math.PI*2);
-        ctx.fill();
-    }
-}
-
-window.onload = () => {
-    startCinematic();
-    setInterval(createSparkles, 100);
-};
-
-</script>
+    <script>
+        // Background mein sitare banane ke liye
+        for (let i = 0; i < 50; i++) {
+            let sparkle = document.createElement('div');
+            sparkle.className = 'sparkle';
+            sparkle.style.top = Math.random() * 100 + 'vh';
+            sparkle.style.left = Math.random() * 100 + 'vw';
+            sparkle.style.animationDelay = Math.random() * 2 + 's';
+            document.body.appendChild(sparkle);
+        }
+    </script>
 </body>
 </html>
