@@ -1,16 +1,98 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Love Animation</title>
-<link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Neon Tree - Samira</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <style>
+        body, html { margin: 0; padding: 0; background: #020205; overflow: hidden; height: 100%; }
+        #container { position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
+        canvas { position: absolute; filter: drop-shadow(0 0 10px #00f2ff); }
+        
+        #final-text {
+            position: absolute;
+            color: #fff;
+            font-family: 'serif';
+            font-size: 1.8rem;
+            text-align: center;
+            opacity: 0;
+            text-shadow: 0 0 20px #00f2ff, 0 0 40px #0077ff;
+            z-index: 10;
+        }
+    </style>
 </head>
 <body>
 
-<canvas id="c"></canvas>
-<div id="text"></div>
-<img id="photo" src="s.jpg">
+<div id="container">
+    <canvas id="treeCanvas"></canvas>
+    <div id="final-text">I Love You Jaan 💕🤌</div>
+</div>
 
-<script src="script.js"></script>
+<script>
+const canvas = document.getElementById('treeCanvas');
+const ctx = canvas.getContext('2d');
+const text = document.getElementById('final-text');
+
+let width, height;
+function resize() {
+    width = canvas.width = window.innerWidth;
+    height = canvas.height = window.innerHeight;
+}
+window.addEventListener('resize', resize);
+resize();
+
+// Animation settings
+let branchLevel = 0;
+const maxLevel = 10; // Tree ki complexity
+const branches = [];
+
+function drawBranch(startX, startY, len, angle, branchWidth, level) {
+    ctx.beginPath();
+    ctx.save();
+    ctx.strokeStyle = "#00f2ff"; // Neon Blue
+    ctx.lineWidth = branchWidth;
+    ctx.translate(startX, startY);
+    ctx.rotate(angle * Math.PI / 180);
+    ctx.moveTo(0, 0);
+    ctx.lineTo(0, -len);
+    ctx.stroke();
+
+    if (level < maxLevel) {
+        // Slow motion growth delay simulation
+        setTimeout(() => {
+            drawBranch(0, -len, len * 0.78, angle + 25, branchWidth * 0.7, level + 1);
+            drawBranch(0, -len, len * 0.78, angle - 25, branchWidth * 0.7, level + 1);
+        }, 500); // 6 seconds total buildup ke liye timing
+    }
+    ctx.restore();
+}
+
+// Sequence logic
+function startAnimation() {
+    ctx.clearRect(0, 0, width, height);
+    ctx.lineCap = "round";
+    
+    // Niche se trunk start hoga
+    drawBranch(width / 2, height - 100, height / 5, 0, 8, 0);
+
+    // 6 seconds baad text aayega
+    gsap.to(canvas, { opacity: 0, duration: 2, delay: 6.5, ease: "power2.inOut" });
+    gsap.to(text, { 
+        opacity: 1, 
+        scale: 1.1, 
+        duration: 2.5, 
+        delay: 7.5,
+        onStart: () => {
+            // Screen par halka sa jhatka (impact) dene ke liye
+            canvas.style.display = "none";
+        }
+    });
+}
+
+// Start immediately
+window.onload = startAnimation;
+
+</script>
 </body>
 </html>
